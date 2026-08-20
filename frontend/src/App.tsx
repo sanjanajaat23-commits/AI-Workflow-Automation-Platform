@@ -11,6 +11,7 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import WorkflowBuilder from "./workflow/WorkflowBuilder";
 import Executions from "./pages/Executions";
+import Logs from "./pages/Logs";
 
 function Placeholder({
   title,
@@ -54,9 +55,7 @@ export default function App() {
 
           <Route
             path="/logs"
-            element={
-              <Placeholder title="Execution Logs" />
-            }
+            element={<Logs />}
           />
 
           <Route

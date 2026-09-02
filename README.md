@@ -1,12 +1,31 @@
 # AI Workflow Automation Platform
 
-A full-stack workflow automation platform for designing, saving, executing, and inspecting multi-step workflows through a visual React Flow editor and a FastAPI execution engine.
+Full-stack workflow orchestration platform for **designing, validating, executing, scheduling, and inspecting multi-step automations** through a visual React Flow editor and FastAPI execution engine.
 
-The project demonstrates an end-to-end automation pipeline: **visual workflow design → backend validation → node execution → persistent execution history → node-level execution logs**.
+Built to demonstrate practical **backend engineering, workflow orchestration, API design, persistence, observability, and AI integration**.
 
-> Built as a portfolio project to demonstrate practical full-stack, backend, workflow-engineering, and AI integration skills.
+## Core Workflow
 
-## Highlights
+```text
+Visual Workflow Builder
+        ↓
+Frontend Validation
+        ↓
+FastAPI API
+        ↓
+Workflow Executor
+        ↓
+Node Factory
+   ┌────┼─────┐
+ HTTP  AI   ...
+   └────┼─────┘
+        ↓
+Execution Result
+        ↓
+History + Node Logs
+```
+
+## Key Engineering Features
 
 - Visual workflow builder powered by React Flow
 - Connected workflow nodes with automatic layout
@@ -15,101 +34,58 @@ The project demonstrates an end-to-end automation pipeline: **visual workflow de
 - FastAPI backend with SQLAlchemy persistence
 - SQLite local development database
 - Workflow validation before execution
+- Node-by-node execution with shared workflow context
 - Execution history with status and timestamps
-- Node-level execution logs with INFO/ERROR levels
-- Automatic saving of workflow configuration before execution
+- Node-level INFO/ERROR execution logs
+- Automatic workflow-state persistence before execution
 - APScheduler integration for scheduled automation
-- Windows PowerShell development workflow
-
-## Screenshots
-
-### Dashboard
-
-![AI Workflow Dashboard](screenshots/dashboard.png)
-
-### Visual Workflow Builder
-
-![Workflow Builder](screenshots/workflow-builder.png)
-
-### Execution Logs
-
-The application also provides a live execution-log view showing the individual nodes executed during a workflow run, including timestamps, log levels, and messages.
+- Structured frontend/backend separation
+- Environment-based configuration
+- Git hygiene for secrets, caches, databases, and build output
 
 ## Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
-│                     React + TypeScript                  │
-│                    Vite + React Flow                    │
+│              React + TypeScript + React Flow            │
 │                                                         │
-│  Dashboard │ Workflow Builder │ Executions │ Logs      │
+│ Dashboard │ Builder │ Executions │ Logs                 │
 └──────────────────────────┬──────────────────────────────┘
                            │ REST / JSON
                            ▼
 ┌─────────────────────────────────────────────────────────┐
-│                       FastAPI                           │
-│                                                         │
-│  API Routes → Services → Workflow Executor             │
-│                         │                               │
-│                         ▼                               │
-│                 Node Factory / Nodes                    │
-│                 HTTP │ AI │ ...                         │
+│                         FastAPI                         │
+│              API Routes → Services → Executor           │
 └──────────────────────────┬──────────────────────────────┘
-                           │ SQLAlchemy
+                           │
                            ▼
-┌─────────────────────────────────────────────────────────┐
-│                        SQLite                           │
-│                                                         │
-│ Workflows │ Executions │ Execution Logs                 │
-└─────────────────────────────────────────────────────────┘
+                    Workflow Engine
+                           │
+                    Node Factory
+                    /     |      \
+                 HTTP     AI      ...
+                           │
+                           ▼
+                     SQLAlchemy
+                           │
+                           ▼
+                        SQLite
+              Workflows / Executions / Logs
 ```
-
-## Tech Stack
-
-### Frontend
-
-- React 19
-- TypeScript
-- Vite 8
-- React Flow
-- Axios
-- React Router
-
-### Backend
-
-- Python 3.13
-- FastAPI
-- SQLAlchemy 2
-- Pydantic
-- SQLite
-- APScheduler
-- OpenAI SDK
-
-### Engineering Concepts
-
-- REST API design
-- Workflow orchestration
-- Node-based execution
-- Input validation
-- Persistent execution state
-- Execution logging
-- Error handling
-- Service/CRUD separation
-- Environment-based configuration
 
 ## How It Works
 
-1. A user opens the Workflow Builder.
-2. Nodes are placed and connected on the React Flow canvas.
-3. Node configuration is validated before execution.
-4. The frontend saves the current workflow state through the API.
-5. The FastAPI workflow executor creates an execution record.
+1. The user creates a workflow on the visual canvas.
+2. Nodes are connected to define execution order.
+3. Workflow configuration is validated before execution.
+4. The frontend saves the workflow through the API.
+5. The execution engine creates an execution record.
 6. Nodes execute in workflow order and pass context between steps.
-7. Each executed node creates an execution-log record.
-8. The execution is marked `completed` or `failed` with output/error information.
-9. Execution history and logs can be inspected from the frontend.
+7. Each node writes an execution-log record.
+8. The run finishes as `completed` or `failed` with output/error information.
+9. Execution history and node logs remain available for inspection.
 
-## Example Workflow
+## Example Automation
 
 ```text
 Start
@@ -121,93 +97,31 @@ AI Processing
 HTTP Request
 ```
 
-The repository includes a working local workflow using this pattern. In demo mode, AI nodes can execute without requiring OpenAI credits.
+AI nodes support a local demo mode so the example workflow can be tested without OpenAI credits.
 
-## Local Setup — Windows PowerShell
+## Tech Stack
 
-### Prerequisites
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, TypeScript, Vite 8, React Flow, Axios, React Router |
+| Backend | Python 3.13, FastAPI, SQLAlchemy 2, Pydantic |
+| Automation | Workflow engine, node factory, APScheduler |
+| AI | OpenAI SDK + local demo mode |
+| Persistence | SQLite |
+| API | REST / JSON, FastAPI OpenAPI docs |
 
-- Python 3.13
-- Node.js / npm
-- Git
+## Engineering Concepts
 
-### 1. Clone the repository
-
-```powershell
-git clone https://github.com/sanjanajaat23-commits/AI-Workflow-Automation-Platform.git
-cd AI-Workflow-Automation-Platform
-```
-
-### 2. Create and activate the Python environment
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r backend\requirements.txt
-```
-
-### 3. Configure the backend
-
-```powershell
-Copy-Item backend\.env.example backend\.env
-```
-
-Demo mode is enabled by default, so an OpenAI API key is not required for the demo workflow.
-
-For real OpenAI execution, configure `backend\.env` with:
-
-```text
-DEMO_MODE=false
-OPENAI_API_KEY=your_key_here
-```
-
-**Never commit `backend/.env`.**
-
-### 4. Start the backend
-
-From the project root:
-
-```powershell
-python -m uvicorn backend.app.main:app --reload --port 8000
-```
-
-FastAPI docs:
-
-`http://127.0.0.1:8000/docs`
-
-### 5. Start the frontend
-
-Open a second PowerShell window:
-
-```powershell
-cd frontend
-npm install
-npm run dev
-```
-
-Open the Vite URL shown in the terminal, normally:
-
-`http://localhost:5173`
-
-## Verification
-
-### Backend syntax check
-
-From the project root:
-
-```powershell
-python -m compileall backend\app
-```
-
-### Frontend production build
-
-```powershell
-cd frontend
-npm run build
-```
-
-The production build should complete successfully with TypeScript compilation and Vite bundling.
+- REST API design
+- Workflow orchestration
+- Node-based execution
+- Input validation
+- Persistent execution state
+- Execution logging and error handling
+- Service / CRUD separation
+- Scheduled automation
+- Environment-based configuration
+- Frontend/backend integration
 
 ## Project Structure
 
@@ -227,28 +141,92 @@ AI-Workflow-Automation-Platform/
 │   └── requirements.txt
 ├── frontend/
 │   └── src/
-│       ├── components/       # Shared UI components
-│       ├── pages/            # Dashboard, executions, logs
-│       ├── services/         # API clients
-│       └── workflow/         # Visual workflow builder
+│       ├── components/
+│       ├── pages/
+│       ├── services/
+│       └── workflow/
 ├── screenshots/
 ├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
+## Screenshots
+
+### Dashboard
+
+![AI Workflow Dashboard](screenshots/dashboard.png)
+
+### Visual Workflow Builder
+
+![Workflow Builder](screenshots/workflow-builder.png)
+
+### Execution Logs
+
+The application provides execution-log views showing individual nodes, timestamps, log levels, and messages.
+
+## Run Locally — Windows PowerShell
+
+### Prerequisites
+
+- Python 3.13
+- Node.js / npm
+- Git
+
+### Backend
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r backend\requirements.txt
+Copy-Item backend\.env.example backend\.env
+python -m uvicorn backend.app.main:app --reload --port 8000
+```
+
+FastAPI docs:
+
+`http://127.0.0.1:8000/docs`
+
+Demo mode is enabled by default. For real OpenAI execution, configure `DEMO_MODE=false` and `OPENAI_API_KEY` in `backend/.env`.
+
+### Frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+The Vite application normally runs at `http://localhost:5173`.
+
+## Verification
+
+Backend syntax check:
+
+```powershell
+python -m compileall backend\app
+```
+
+Frontend production build:
+
+```powershell
+cd frontend
+npm run build
+```
+
+## Security & Git Hygiene
+
+Never commit API keys or local secrets. The repository is designed to exclude `.env`, virtual environments, `node_modules`, build output, local databases, logs, and caches.
+
+For production use, the platform would additionally need authentication/authorization, secure secret management, rate limiting, durable background workers, monitoring, audit logging, and production infrastructure.
+
 ## Current Scope
 
-The core workflow automation path is implemented and verified locally. The main supported experience is the visual builder, HTTP/AI workflow execution, execution history, and execution logs.
+The core workflow path is implemented and verified locally: visual workflow design, validation, HTTP/AI execution, persistence, scheduling integration, execution history, and node-level logs.
 
 The AI Assistant and Settings navigation areas are intentionally not presented as completed features.
 
-## GitHub Hygiene
+## Portfolio Value
 
-The repository ignores local environments, `node_modules`, build output, `.env` files, local databases, logs, and caches.
-
-Commit `backend/.env.example` for configuration guidance, but never commit `backend/.env` or API keys.
-
-## Why This Project
-
-This project was designed to demonstrate more than a frontend interface. It combines a typed React application with a Python API, persistent state, a workflow execution engine, configurable nodes, validation, error handling, and observable execution history/logging.
+This project demonstrates hands-on experience with **full-stack application architecture, Python/FastAPI backend development, workflow orchestration, API integration, persistent state, scheduling, error handling, execution observability, React/TypeScript, and AI-enabled automation**.

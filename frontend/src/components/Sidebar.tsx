@@ -1,84 +1,54 @@
 import { NavLink } from "react-router-dom";
 
 const menu = [
-  {
-    name: "Dashboard",
-    icon: "🏠",
-    path: "/",
-  },
-  {
-    name: "Workflow Builder",
-    icon: "⚡",
-    path: "/workflow",
-  },
-  {
-    name: "Executions",
-    icon: "▶",
-    path: "/executions",
-  },
-  {
-    name: "Execution Logs",
-    icon: "📜",
-    path: "/logs",
-  },
-  {
-    name: "AI Assistant",
-    icon: "🤖",
-    path: "/ai",
-  },
-  {
-    name: "Settings",
-    icon: "⚙",
-    path: "/settings",
-  },
+  { name: "Dashboard", icon: "⌂", path: "/dashboard" },
+  { name: "Workflow Builder", icon: "✦", path: "/workflow" },
+  { name: "Executions", icon: "▶", path: "/executions" },
+  { name: "Execution Logs", icon: "≡", path: "/logs" },
+];
+
+const workspace = [
+  { name: "AI Copilot", icon: "✧", path: "/ai" },
+  { name: "Settings", icon: "⚙", path: "/settings" },
 ];
 
 export default function Sidebar() {
   return (
-    <aside
-      style={{
-        width: 250,
-        background: "#111827",
-        color: "white",
-        padding: 20,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <h2
-        style={{
-          marginBottom: 30,
-        }}
-      >
-        ⚡ AI Workflow
-      </h2>
+    <aside className="sidebar">
+      <div className="brand">
+        <div className="brand-mark">✦</div>
+        <div>
+          <strong>AI Workflow</strong>
+          <span>Automation Cloud</span>
+        </div>
+      </div>
 
-      <nav
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
+      <nav className="sidebar-nav" aria-label="Main navigation">
+        <span className="nav-label">OPERATIONS</span>
         {menu.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            style={({ isActive }) => ({
-              textDecoration: "none",
-              color: "white",
-              padding: "12px 14px",
-              borderRadius: 8,
-              background: isActive
-                ? "#2563eb"
-                : "transparent",
-              transition: "0.2s",
-            })}
-          >
-            {item.icon} {item.name}
+          <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+            <span className="nav-icon">{item.icon}</span>
+            <span>{item.name}</span>
+          </NavLink>
+        ))}
+
+        <span className="nav-label workspace-label">WORKSPACE</span>
+        {workspace.map((item) => (
+          <NavLink key={item.path} to={item.path} className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+            <span className="nav-icon">{item.icon}</span>
+            <span>{item.name}</span>
+            {item.path === "/ai" && <span className="nav-badge">AI</span>}
           </NavLink>
         ))}
       </nav>
+
+      <div className="sidebar-footer">
+        <span className="online-dot" />
+        <div>
+          <strong>Workspace online</strong>
+          <span>API + scheduler connected</span>
+        </div>
+      </div>
     </aside>
   );
 }

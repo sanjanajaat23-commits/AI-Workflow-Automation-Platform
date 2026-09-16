@@ -13,7 +13,6 @@ from backend.app.models.execution import Execution
 from backend.app.models.execution_log import ExecutionLog
 from backend.app.models.schedule import WorkflowSchedule
 from backend.app.database.database import Base, engine, SessionLocal
-from backend.app.models.user import User
 from backend.app.core.security import hash_password
 
 # --------------------------------------------------
@@ -26,16 +25,14 @@ from backend.app.nodes import register_builtin_nodes
 # Scheduler
 # --------------------------------------------------
 
-from backend.app.core.scheduler import (
-    start_scheduler,
-    stop_scheduler,
-)
+from backend.app.core.scheduler import start_scheduler, stop_scheduler
 
 # --------------------------------------------------
 # Routers
 # --------------------------------------------------
 
 from backend.app.api.v1.health import router as health_router
+from backend.app.api.v1.ai import router as ai_router
 from backend.app.api.v1.auth.register import router as register_router
 from backend.app.api.v1.auth.login import router as login_router
 from backend.app.api.v1.workflows import router as workflows_router
@@ -46,9 +43,7 @@ from backend.app.api.v1.execution_logs import router as execution_logs_router
 from backend.app.api.v1.dashboard import router as dashboard_router
 from backend.app.api.v1.schedules import router as schedules_router
 from backend.app.api.v1.webhooks import router as webhooks_router
-from backend.app.api.v1.workflow_templates import (
-    router as workflow_templates_router,
-)
+from backend.app.api.v1.workflow_templates import router as workflow_templates_router
 
 app = FastAPI(
     title="AI Workflow Automation Platform",
@@ -80,8 +75,6 @@ app.add_middleware(
 def startup():
     Base.metadata.create_all(bind=engine)
 
-    # Development seed: the current UI uses a temporary user until JWT auth
-    # is wired into workflow routes. This keeps a fresh local database usable.
     db = SessionLocal()
     try:
         if db.query(User).filter(User.id == 1).first() is None:
@@ -111,77 +104,19 @@ def shutdown():
 # Routers
 # --------------------------------------------------
 
-app.include_router(
-    health_router,
-    prefix="/api/v1",
-    tags=["Health"],
-)
-
-app.include_router(
-    register_router,
-    prefix="/api/v1/auth",
-    tags=["Authentication"],
-)
-
-app.include_router(
-    login_router,
-    prefix="/api/v1/auth",
-    tags=["Authentication"],
-)
-
-app.include_router(
-    workflows_router,
-    prefix="/api/v1/workflows",
-    tags=["Workflows"],
-)
-
-app.include_router(
-    workflow_nodes_router,
-    prefix="/api/v1/workflows",
-    tags=["Workflow Nodes"],
-)
-
-app.include_router(
-    workflow_connections_router,
-    prefix="/api/v1/workflows",
-    tags=["Workflow Connections"],
-)
-
-app.include_router(
-    executions_router,
-    prefix="/api/v1/executions",
-    tags=["Executions"],
-)
-
-app.include_router(
-    execution_logs_router,
-    prefix="/api/v1/execution-logs",
-    tags=["Execution Logs"],
-)
-
-app.include_router(
-    dashboard_router,
-    prefix="/api/v1/dashboard",
-    tags=["Dashboard"],
-)
-
-app.include_router(
-    schedules_router,
-    prefix="/api/v1/schedules",
-    tags=["Workflow Scheduler"],
-)
-
-app.include_router(
-    webhooks_router,
-    prefix="/api/v1/webhooks",
-    tags=["Webhooks"],
-)
-
-app.include_router(
-    workflow_templates_router,
-    prefix="/api/v1",
-    tags=["Workflow Templates"],
-)
+app.include_router(health_router, prefix="/api/v1", tags=["Health"])
+app.include_router(ai_router, prefix="/api/v1/ai", tags=["AI Copilot"])
+app.include_router(register_router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(login_router, prefix="/api/v1/auth", tags=["Authentication"])
+app.include_router(workflows_router, prefix="/api/v1/workflows", tags=["Workflows"])
+app.include_router(workflow_nodes_router, prefix="/api/v1/workflows", tags=["Workflow Nodes"])
+app.include_router(workflow_connections_router, prefix="/api/v1/workflows", tags=["Workflow Connections"])
+app.include_router(executions_router, prefix="/api/v1/executions", tags=["Executions"])
+app.include_router(execution_logs_router, prefix="/api/v1/execution-logs", tags=["Execution Logs"])
+app.include_router(dashboard_router, prefix="/api/v1/dashboard", tags=["Dashboard"])
+app.include_router(schedules_router, prefix="/api/v1/schedules", tags=["Workflow Scheduler"])
+app.include_router(webhooks_router, prefix="/api/v1/webhooks", tags=["Webhooks"])
+app.include_router(workflow_templates_router, prefix="/api/v1", tags=["Workflow Templates"])
 
 # --------------------------------------------------
 # Root
